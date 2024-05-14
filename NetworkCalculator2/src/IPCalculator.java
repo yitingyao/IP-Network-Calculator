@@ -1,11 +1,10 @@
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
  * This program calculates network configurations for IP addresses in IPv4 CIDR
- * notation. notation.
+ * notation.
  * 
  * @author Yiting Yao
  *
@@ -13,14 +12,13 @@ import java.util.Scanner;
 public class IPCalculator {
 
 	public static void main(String[] args) {
-		// Initialize scanner for user input with custom delimiters to handle CIDR notation input
+		// Initialize a scanner to capture user input.
 		Scanner scanner = new Scanner(System.in);
-
 		// Prompt the user to enter an IP address in CIDR format.
-		//The CIDR notation is expressed as an IP address followed by a slash ('/') and a number, indicating how many bits of the address are used for network parts. 
-		try {// Initialize a scanner to read the full line of CIDR input from the user.
+		//CIDR notation is expressed as an IP address followed by a slash ('/') and a number, indicating how many bits of the address are used for network parts. 
+		try {// Read the full line of CIDR input from the user.
 			System.out.print("Enter an IP address in CIDR notation: \n> ");
-			String fullInput = scanner.nextLine(); // Read the full line input
+			String fullInput = scanner.nextLine(); // Read the full line input.
 
 			if (!fullInput.contains("/")) {//Check if the input contains a '/', which is required for correct CIDR notation.
 				System.err.println("CIDR notation requires a slash ('/') followed by the network bits.");
@@ -32,7 +30,7 @@ public class IPCalculator {
 				System.err.println("Please enter a valid CIDR notation (e.g., 192.168.1.1/24).");
 				return;
 			}
-			//Validate the format of the IP part against a regex that checks for valid IPv4 addresses
+			//Validate the format of the IP part against a regex that checks for valid IPv4 addresses.
 			//The regex validates for four octets, each ranging from 0 to 255, separated by dots, no leading zeros for each octet.
 			String ipString = parts[0];
 			if (!ipString.matches(
@@ -71,7 +69,7 @@ public class IPCalculator {
 			int wildCard = ~subnetMask;
 			//Subnet address is calculated by applying a bitwise AND operation between the IP address and the subnet mask, leaving the network segment of the IP.
 			int subnet = ipInt & subnetMask;
-			//Broadcast address is calculated by applying a bitwise OR operation between the IP address and the wildcard mask .
+			//Broadcast address is calculated by applying a bitwise OR operation between the IP address and the wildcard mask.
 			int broadcast = ipInt | wildCard;
 			//Calculate the range of IP addresses within the subnet that can be assigned to a device or a host, where 'hostMin' is the first and 'hostMax' is the last. 
 			int hostMin = subnet + 1;
@@ -85,7 +83,9 @@ public class IPCalculator {
 			// Calculate the total number of subnets that can be created with the borrowed bits.
 			int totalNumberSubnets = (int) Math.pow(2.0, borrowedBits);
 
-			// Calculate the total number of usable host addresses per subnet, 
+			// Calculate the total number of usable host addresses per subnet. 
+			//The subtraction accounts for two addresses in every subnet that cannot be assigned to individual devices: the network address (identifies the subnet itself) and broadcast address. 
+			//The number of hosts per subnet must be an integer, the result from Math.pow is explicitly cast to an int to remove decimal part.
 			int hostsPerSubnet = (int) Math.pow(2.0, hostBits) - 2;
 
 			System.out.println("Output:");
@@ -102,14 +102,12 @@ public class IPCalculator {
 					Binary(hostMin));
 			System.out.printf("Last Host IP Address: %s \t%s \n", intToInetAddress(hostMax).getHostAddress(),
 					Binary(hostMax));
-
 			System.out.printf("Number of borrowed bits =%d \n", borrowedBits);
 			System.out.printf("Number of host bits =%d \n", hostBits);
+			System.out.printf("Number of usable hosts addresses per subnet =%d \n", hostsPerSubnet);
 			System.out.printf("Total number of subnets =%d \n", totalNumberSubnets);
-			System.out.printf("Number of usable IP Addresses within subnet: %d \n", hostsPerSubnet);
-		} catch (InputMismatchException e) {//Occurs if the input provided by the user does not conform to the expected format.
-			System.err.println("Invalid input format. Please enter a valid CIDR notation.");
-		} catch (UnknownHostException e) {//Occurs if the IP address provided by user does not exist
+
+		} catch (UnknownHostException e) {// Thrown by InetAddress.getByName(ipString) if the provided IP address cannot be resolved.
 			System.err.println("Failed to resolve the IP address.");
 		} finally {
 			scanner.close();
@@ -134,19 +132,19 @@ public class IPCalculator {
 		// without misinterpretation of byte values. The OR operation ('|') combines these values into a single integer.
 
 		// The getAddress() extracts the IP address from the InetAddress object as a byte array. 
-		// Each byte represents one octet of the IP address
+		// Each byte represents one octet of the IP address.
 		byte[] octets = ip.getAddress();
 
-		//Initializes an integer (result) to store the final converted value of the IP address
+		//Initializes an integer (result) to store the final converted value of the IP address.
 		//Takes the integer result of shifting the current octet (converted to an unsigned integer) left by designated bits and performs a bitwise OR with the current value of result.
 		//The process accumulates each octet, starting from the most significant (leftmost) to the least significant (rightmost).
 		int result = 0;
-		result |= Byte.toUnsignedInt(octets[0]) << 24; //Position the first octet in the highest byte
-		result |= Byte.toUnsignedInt(octets[1]) << 16; //Postion the second octet in the second highest byte
-		result |= Byte.toUnsignedInt(octets[2]) << 8; //Postion the third octet in the third byte
-		result |= Byte.toUnsignedInt(octets[3]) << 0; //Position the fourth octet in the lowest byte
+		result |= Byte.toUnsignedInt(octets[0]) << 24; //Position the first octet in the highest byte.
+		result |= Byte.toUnsignedInt(octets[1]) << 16; //Postion the second octet in the second highest byte.
+		result |= Byte.toUnsignedInt(octets[2]) << 8; //Postion the third octet in the third byte.
+		result |= Byte.toUnsignedInt(octets[3]) << 0; //Position the fourth octet in the lowest byte.
 
-		// Return the fully compiled 32-bit integer, now representing the entire IP address in binary form
+		// Return the fully compiled 32-bit integer, a decimal representation of the binary combination of the four octets of the IP address.
 		return result;
 	}
 
@@ -177,7 +175,7 @@ public class IPCalculator {
 
 		try {// The InetAddress.getByAddress(octets) function takes byte array and attempts to construct an InetAddress object from it. 
 				//If the byte array forms a valid IP address, the function returns an InetAddress object for it. 
-				//If not, it throws an UnknownHostException
+				//If not, it throws an UnknownHostException.
 			return InetAddress.getByAddress(octets);
 
 		} catch (UnknownHostException e) {//In the case when the byte array doesn't represent a valid IP address format, which will not be accepted by the network layer.
@@ -222,9 +220,9 @@ public class IPCalculator {
 	 */
 	private static String Binary(int ip) {
 
-		// Convert the integer IP to an InetAddress object to facilitate 
+		// Convert the integer IP to an InetAddress object. 
 		InetAddress ipInet = intToInetAddress(ip);
-		// Calls the binary method that handles InetAddress objects to ensure consistent formatting.
+		// Calls the `Binary(InetAddress ip)` method to proceed with formatting.
 		return Binary(ipInet);
 	}
 
@@ -272,25 +270,25 @@ public class IPCalculator {
 	 */
 	private static int getDSM(char ipClass) {
 
-		switch (ipClass) {//Switch takes an uppercase or lowercase character ipClass as input and returns an integer.
-		// if the class is A
+		switch (ipClass) {//Takes an uppercase or lowercase character ipClass as input and returns an integer.
+		// If the class is A
 		case 'A':
 		case 'a':
 			return 8; //Class A addresses are designated with 8 network bits.
 
-		// if class is B
+		// If class is B
 		case 'B':
 		case 'b':
 			return 16; //Class B addresses are designated with 16 network bits.
 
-		// if class is C
+		// If class is C
 		case 'C':
 		case 'c':
 			return 24;//Class C addresses are designated with 24 network bits. 
 		}
 
 		// else return 0
-		return 0;//Classes (D and E) do not have standard DSM bits.
+		return 0;//Classes D and E do not have standard DSM bits.
 	}
 
 	/**
