@@ -287,7 +287,7 @@ public class IPCalculator {
 			return 24;//Class C addresses are designated with 24 network bits. 
 		}
 
-		// else return 0
+		// Else return 0
 		return 0;//Classes D and E do not have standard DSM bits.
 	}
 
