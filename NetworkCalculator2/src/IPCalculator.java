@@ -180,7 +180,7 @@ public class IPCalculator {
 				//If not, it throws an UnknownHostException
 			return InetAddress.getByAddress(octets);
 
-		} catch (UnknownHostException e) {//In the case when  the byte array doesn't represent a valid IP address format, which might happen if the byte array is not acceptable by network layer.
+		} catch (UnknownHostException e) {//In the case when the byte array doesn't represent a valid IP address format, which will not be accepted by the network layer.
 			System.err.println("Failed to convert integer to InetAddress: " + e.getMessage());
 
 		}
@@ -262,7 +262,7 @@ public class IPCalculator {
 	}
 
 	/**
-	 * This method returns the default ubnet mask (DSM) bits based on the class of
+	 * This method returns the default subnet mask (DSM) bits based on the class of
 	 * the IP address.
 	 * 
 	 * @param ipClass: The character indicating the class of the IP (A, B, C, D, E).
